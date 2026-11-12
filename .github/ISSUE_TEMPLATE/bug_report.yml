@@ -1,0 +1,41 @@
+name: Bug report
+description: Something in the market, the agents or the terminal is broken
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting! A replay file (⤓ Replay button, or `agentstreet run --out`) makes market bugs reproducible bit for bit.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. agentstreet --scenario flash-crash --seed 7
+        2. Click "Fat-finger crash" on QBTX at 10:45
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: agentstreet --version
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS / Node / browser
+      placeholder: Windows 11 · Node 22 · Chrome 131
+  - type: textarea
+    id: extra
+    attributes:
+      label: Replay file, logs or screenshots
+      description: Drag the .street.json(.gz) file here if you have one. Please remove API keys from logs.

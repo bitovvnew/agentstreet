@@ -1,0 +1,67 @@
+{
+  "name": "agentstreet",
+  "version": "0.1.0",
+  "description": "A simulated stock exchange run by AI trader agents. Real limit order book, margin, circuit breakers, LLM newsroom, Bloomberg-style live terminal. No real money. Runs with zero API keys.",
+  "type": "module",
+  "bin": {
+    "agentstreet": "bin/agentstreet.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "dashboard",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "tsc -p tsconfig.json",
+    "start": "npm run build && node bin/agentstreet.js",
+    "demo": "node bin/agentstreet.js",
+    "headless": "node bin/agentstreet.js run --ticks 2000 --out replays/demo.street.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "screenshots": "npm run build && node scripts/screenshots.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "ai-agents",
+    "llm",
+    "multi-agent",
+    "simulation",
+    "stock-exchange",
+    "order-book",
+    "matching-engine",
+    "market-simulation",
+    "agent-based-model",
+    "openai",
+    "anthropic",
+    "claude",
+    "gemini",
+    "ollama",
+    "dashboard"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitovvnew/agentstreet.git"
+  },
+  "homepage": "https://github.com/bitovvnew/agentstreet#readme",
+  "bugs": "https://github.com/bitovvnew/agentstreet/issues",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
+  }
+}

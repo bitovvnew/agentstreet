@@ -1,0 +1,30 @@
+name: Feature request
+description: A new trader, scenario, panel, provider or market mechanic
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - New trader personality / strategy
+        - New scenario
+        - Exchange mechanics
+        - LLM providers / prompts
+        - Dashboard
+        - Replays / CLI
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What should happen, and what story would it let the market tell?
+    validations:
+      required: true
+  - type: textarea
+    id: alt
+    attributes:
+      label: Could it be a plugin?
+      description: Many ideas work as a `--plugin` file first. Have you tried, or is something missing from the plugin API?

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AgentStreet Terminal</title>
+  <meta name="description" content="A simulated stock exchange run by AI trader agents. Play money only." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="term">
+    <!-- ───────── top bar ───────── -->
+    <header class="topbar" style="grid-area: top">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="2" y="12" width="4" height="10" rx="1" fill="#fab219"/><rect x="10" y="6" width="4" height="16" rx="1" fill="#fab219"/><rect x="18" y="2" width="4" height="20" rx="1" fill="#fab219"/></svg>
+        <span class="brand-name">AGENTSTREET</span>
+        <span class="chip sim" title="Fictional companies, play money, no real orders. Not financial advice.">SIMULATION · PLAY MONEY</span>
+      </div>
+      <div class="status" id="status"><span class="dot"></span><span id="status-text">CONNECTING</span></div>
+      <div class="clock" id="clock">D1 09:30</div>
+      <div class="kpis" id="top-kpis"></div>
+      <div class="top-actions">
+        <div class="seg" id="speed" role="group" aria-label="Simulation speed"></div>
+        <button class="btn" id="btn-pause" title="Pause / resume (Space)">❚❚</button>
+        <button class="btn ghost" id="btn-cvd" title="Colour-blind palette: swap green/red for blue/orange" aria-pressed="false">CVD</button>
+        <a class="btn ghost" id="btn-download" href="api/replay" download title="Download a shareable replay file">⤓ Replay</a>
+      </div>
+    </header>
+
+    <!-- ───────── news ticker ───────── -->
+    <div class="ticker" style="grid-area: tick" aria-label="Latest headlines"><div class="ticker-track" id="ticker"></div></div>
+
+    <!-- ───────── watchlist ───────── -->
+    <section class="panel" style="grid-area: watch">
+      <h2>Watchlist <span class="hint">1–6</span></h2>
+      <div class="watchlist" id="watchlist" role="listbox" aria-label="Symbols"></div>
+    </section>
+
+    <!-- ───────── chart ───────── -->
+    <section class="panel chart-panel" style="grid-area: chart">
+      <div class="panel-head">
+        <div class="sym-head" id="sym-head"></div>
+        <div class="seg" id="tf" role="group" aria-label="Candle size"></div>
+        <label class="toggle" title="The hidden fundamental value. Agents never see it; you do."><input type="checkbox" id="fair-toggle" checked /> True value</label>
+      </div>
+      <div class="canvas-wrap"><canvas id="candles"></canvas></div>
+    </section>
+
+    <!-- ───────── order book ───────── -->
+    <section class="panel" style="grid-area: book">
+      <h2>Order book <span class="hint" id="book-sym"></span></h2>
+      <div class="ladder" id="ladder"></div>
+    </section>
+
+    <!-- ───────── controls ───────── -->
+    <section class="panel" style="grid-area: ctrl">
+      <h2 id="ctrl-title">Control room</h2>
+      <div id="controls" class="controls"></div>
+    </section>
+
+    <!-- ───────── depth ───────── -->
+    <section class="panel" style="grid-area: depth">
+      <h2>Market depth <span class="hint">cumulative size</span></h2>
+      <div class="canvas-wrap"><canvas id="depth"></canvas></div>
+    </section>
+
+    <!-- ───────── market stats ───────── -->
+    <section class="panel" style="grid-area: stats">
+      <h2>Market</h2>
+      <div class="stats">
+        <div class="gauge-wrap"><canvas id="gauge"></canvas></div>
+        <div class="stat-grid" id="stat-grid"></div>
+      </div>
+    </section>
+
+    <!-- ───────── tape ───────── -->
+    <section class="panel" style="grid-area: tape">
+      <div class="panel-head">
+        <h2>Time &amp; sales</h2>
+        <div class="seg small" id="tape-scope"><button data-v="sel" class="on">Symbol</button><button data-v="all">All</button></div>
+      </div>
+      <div class="tape" id="tape"></div>
+    </section>
+
+    <!-- ───────── leaderboard ───────── -->
+    <section class="panel" style="grid-area: lead">
+      <div class="panel-head">
+        <h2>Leaderboard</h2>
+        <div class="seg small" id="lb-tabs"><button data-v="personality" class="on">Strategies</button><button data-v="team">Models</button><button data-v="agent">Traders</button></div>
+      </div>
+      <div class="lead">
+        <div class="lb-table" id="lb-table"></div>
+        <div class="lb-chart"><div class="legend" id="lb-legend"></div><div class="canvas-wrap"><canvas id="equity"></canvas></div></div>
+      </div>
+    </section>
+
+    <!-- ───────── news ───────── -->
+    <section class="panel" style="grid-area: news">
+      <h2>Newswire <span class="hint">agents trade on these</span></h2>
+      <div class="news" id="news"></div>
+    </section>
+
+    <!-- ───────── chatter / alerts ───────── -->
+    <section class="panel" style="grid-area: feed">
+      <div class="panel-head">
+        <h2>Floor</h2>
+        <div class="seg small" id="feed-tabs"><button data-v="chatter" class="on">Chatter</button><button data-v="alerts">Alerts <span id="alert-count" class="count"></span></button></div>
+      </div>
+      <div class="feed" id="feed"></div>
+    </section>
+
+    <!-- ───────── scrubber ───────── -->
+    <footer class="scrub" style="grid-area: scrub">
+      <button class="btn" id="btn-play" title="Play / pause the replay">▶</button>
+      <div class="seg small" id="play-speed"></div>
+      <div class="scrub-track">
+        <canvas id="scrub-canvas"></canvas>
+        <input type="range" id="scrub" min="1" max="1" value="1" aria-label="Time travel through the session" />
+      </div>
+      <span class="scrub-clock" id="scrub-clock"></span>
+      <button class="btn live-btn" id="btn-live" title="Jump back to the live market">● LIVE</button>
+    </footer>
+  </div>
+
+  <div id="breaking" class="breaking" role="alert" hidden></div>
+  <div id="tooltip" class="tooltip" hidden></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
