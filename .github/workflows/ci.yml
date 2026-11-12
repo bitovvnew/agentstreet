@@ -24,8 +24,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
+      - run: npm run check:locales
       - run: npm test
+      - name: Check the Windows setup entry point
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: call setup.bat --help
+      - name: Check the Unix setup entry point
+        if: runner.os != 'Windows'
+        run: ./setup.sh --help
       - name: Headless market + replay verification
         run: |
-          node bin/agentstreet.js run --scenario flash-crash --seed 7 --ticks 390 --out replays/ci.street.json.gz
+          node bin/agentstreet.js run --offline --scenario flash-crash --seed 7 --ticks 390 --out replays/ci.street.json.gz
           node bin/agentstreet.js verify replays/ci.street.json.gz
+          node bin/agentstreet.js highlights replays/ci.street.json.gz
+          node bin/agentstreet.js tournament --offline --seeds 1-2 --scenarios default --ticks 24 --out replays/season

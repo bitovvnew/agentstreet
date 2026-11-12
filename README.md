@@ -20,7 +20,7 @@ Pit GPT, Claude, Gemini and local Llamas against each other and find out which m
 
 > [!IMPORTANT]
 > **This is a simulation.** Every company is fictional, all money is play money, and no order ever leaves your machine.
-> Nothing here is financial advice. If a fictional cat-themed social network makes you want to buy a real stock, please go outside.
+> AgentStreet has no broker integrations and provides no financial advice.
 
 ---
 
@@ -38,27 +38,31 @@ AgentStreet is that market. You get to watch:
 ## Quickstart
 
 ```bash
-npx github:bitovvnew/agentstreet
+npx --yes github:bitovvnew/agentstreet#v0.1.1 demo
 ```
 
-That's it. The market opens at `http://127.0.0.1:4600` with 65 heuristic agents trading six fictional companies. No keys, no accounts, no Docker.
+The market opens at `http://127.0.0.1:4600` with 65 heuristic agents trading six fictional companies. The demo runs without API keys.
 
 From a clone:
 
 ```bash
 git clone https://github.com/bitovvnew/agentstreet && cd agentstreet
-npm install
-npm start                                   # live demo
-npm start -- --scenario flash-crash         # pick a scenario
+npm ci
+npm start                                   # first-run browser setup
+npm start -- demo --scenario flash-crash    # keyless demo with a chosen scenario
 ```
 
-Below, `agentstreet` means `npx github:bitovvnew/agentstreet`, or `node bin/agentstreet.js` inside a clone.
+Below, `agentstreet` means `npx --yes github:bitovvnew/agentstreet#v0.1.1`, or `node bin/agentstreet.js` inside a built checkout.
 
 ### Put real models on the trading floor
 
+Run `agentstreet setup --web` for browser setup. The wizard checks provider keys by listing models, detects local Ollama models and remembers the league in a local configuration folder. For terminal setup in a checkout, run `./setup.bat` on Windows or `./setup.sh` on macOS and Linux.
+
+You can also use your environment keys and pick model IDs from a provider's live catalog.
+
 ```bash
-export ANTHROPIC_API_KEY=...  OPENAI_API_KEY=...  GEMINI_API_KEY=...
-agentstreet --models anthropic:claude-haiku-5-5,openai:gpt-4o-mini,gemini:gemini-2.0-flash,ollama:llama3.1
+agentstreet models anthropic
+agentstreet --models anthropic:CLAUDE_ID,openai:OPENAI_ID,gemini:GEMINI_ID,ollama:LOCAL_ID
 ```
 
 Each model gets a **team of five traders** (value, momentum, panic seller, rumor chaser, contrarian) with identical starting capital, and plays every role in character. The **Models** tab of the leaderboard ranks the teams live. Local models work through [Ollama](https://ollama.com) with no key at all.
@@ -68,9 +72,10 @@ Each model gets a **team of five traders** (value, momentum, panic seller, rumor
 | Anthropic | `anthropic:<model>` | `ANTHROPIC_API_KEY` |
 | OpenAI (or any compatible API) | `openai:<model>` | `OPENAI_API_KEY` (+ `OPENAI_BASE_URL`) |
 | Google Gemini | `gemini:<model>` | `GEMINI_API_KEY` |
+| OpenRouter | `openrouter:<model>` | `OPENROUTER_API_KEY` |
 | Ollama (local) | `ollama:<model>` | none (`OLLAMA_HOST` optional) |
 
-Want the newsroom written by an LLM too? Add `--news-writer anthropic:claude-haiku-5-5`.
+Add `--news-writer anthropic:CLAUDE_ID` to have a model rewrite fictional news headlines. Token budgets switch agents to their built-in strategies as reported usage reaches the configured limits. A dollar budget applies when provider prices are available, such as for models selected through the OpenRouter catalog. Requests already in flight can take the run beyond a threshold.
 
 ## The terminal
 
@@ -90,6 +95,8 @@ Want the newsroom written by an LLM too? Add `--news-writer anthropic:claude-hai
 | **Time travel** | Scrub back through the whole session while the market keeps running; jump back with **● LIVE** |
 
 **Control room** (live mode): inject good or bad news, start a rumor, trigger a meme pump, fat-finger a crash, halt a stock, hike or cut rates, or publish **your own headline** and watch who believes it.
+
+The terminal also offers a highlight list that jumps to market events, trader X-ray for the last live model exchange, scheduled fictional news, and shareable chart cards and replay clips. The interface supports English, Russian, Kazakh, French, Simplified Chinese, Korean, Spanish and Japanese.
 
 Keys: `1`–`6` select a stock, `Space` pause, `←/→` step through time (hold `Shift` for 30 min). The **CVD** button swaps the up/down colors for a color-blind-safe blue/orange pair; up candles are hollow and down candles filled, so color is never the only cue.
 
@@ -111,6 +118,16 @@ agentstreet scenarios
 | `flash-crash` | A runaway algo dumps Qubitron (QBTX) at 10:30. Limit-down halts, market-wide breakers, margin calls, and a fight in every re-opening cross. |
 | `rate-shock` | +50bp every hour for four hours. Long-duration growth stocks (Quantum, Space) get repriced hardest. |
 | `earnings-season` | Three times the news flow. Beats, misses, guidance cuts and analyst whiplash. |
+
+## Compare strategies across runs
+
+```bash
+agentstreet tournament --offline --seeds 1-5 --scenarios default,flash-crash --ticks 390 --out replays/tournament
+agentstreet init-strategy my-strategy
+agentstreet backtest --offline --plugin ./my-strategy.strategy.js --scenario my-strategy-arena --seeds 1-5
+```
+
+Tournaments write Markdown, JSON and HTML reports with returns, drawdowns and estimated confidence intervals across the selected seeds. Use `agentstreet highlights REPLAY_FILE` to list the key events of a single recorded market.
 
 ## The traders
 

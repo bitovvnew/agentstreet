@@ -12,7 +12,8 @@ import { Simulation, Recorder, startServer } from '../dist/index.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'docs', 'img');
-const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'agentstreet-shots-'));
+const TEMP_ROOT = path.resolve(os.tmpdir());
+const TMP = fs.mkdtempSync(path.join(TEMP_ROOT, 'agentstreet-shots-'));
 fs.mkdirSync(OUT, { recursive: true });
 
 const BROWSERS = [
@@ -61,7 +62,7 @@ const shots = [
   ] },
   { scenario: 'meme-mania', seed: 4, ticks: 420, port: 4712, views: [
     { file: 'hero.png', q: 't=260&sym=MEOW&tf=5&lb=personality&feed=chatter', w: 1600, h: 1000 },
-    { file: 'mobile.png', q: 't=260&sym=MEOW&tf=5', w: 390, h: 844 },
+    { file: 'mobile.png', q: 't=260&sym=MEOW&tf=5', w: 500, h: 900 },
   ] },
 ];
 
@@ -69,9 +70,11 @@ for (const s of shots) {
   const replay = await record(s.scenario, s.seed, s.ticks);
   const srv = startServer({ port: s.port, host: '127.0.0.1', mode: 'replay', replay });
   await new Promise((r) => setTimeout(r, 300));
-  for (const v of s.views) await shot(`http://127.0.0.1:${s.port}/?${v.q}`, v.file, v.w, v.h);
+  for (const v of s.views) await shot(`http://127.0.0.1:${s.port}/?${v.q}&lang=en`, v.file, v.w, v.h);
   srv.close();
 }
-fs.rmSync(TMP, { recursive: true, force: true });
+if (path.dirname(TMP) === TEMP_ROOT && path.basename(TMP).startsWith('agentstreet-shots-')) {
+  fs.rmSync(TMP, { recursive: true, force: true });
+}
 console.log('done →', path.relative(ROOT, OUT));
 process.exit(0);

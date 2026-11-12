@@ -5,89 +5,111 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AgentStreet Terminal</title>
   <meta name="description" content="A simulated stock exchange run by AI trader agents. Play money only." />
+  <meta name="theme-color" content="#0b0b0a" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="app" class="term">
-    <!-- ───────── top bar ───────── -->
+  <!-- Icon sprite: 1.5px strokes. No emoji anywhere in the UI. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-play" viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 16 16"><path d="M4 2.5h3v11H4zM9 2.5h3v11H9z" fill="currentColor"/></symbol>
+      <symbol id="i-live" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-download" viewBox="0 0 16 16"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-film" viewBox="0 0 16 16"><path d="M2 3h12v10H2zM5 3v10M11 3v10M2 6h3M2 10h3M11 6h3M11 10h3" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-flag" viewBox="0 0 16 16"><path d="M3.5 14V2.5M3.5 3h8l-2 3 2 3h-8" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-share" viewBox="0 0 16 16"><path d="M8 10V2M5 5l3-3 3 3M3 8v5.5h10V8" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 8h12M8 2c2 2 2 10 0 12M8 2c-2 2-2 10 0 12" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+      <symbol id="i-motion" viewBox="0 0 16 16"><path d="M1.5 8h3l2-4.5 3 9 2-4.5h3" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 16 16"><path d="M9 1.5 3.5 9H8l-1 5.5L12.5 7H8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="i-stop" viewBox="0 0 16 16"><path d="M5.2 1.5h5.6l3.7 3.7v5.6l-3.7 3.7H5.2l-3.7-3.7V5.2z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 8h5" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-x" viewBox="0 0 16 16"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 16 16"><path d="M8 1.8 15 14H1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v4M8 11.5v1" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-pct" viewBox="0 0 16 16"><path d="M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.5"/><circle cx="4.5" cy="4.5" r="1.7" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="11.5" cy="11.5" r="1.7" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.5V8l2.5 1.5" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-pen" viewBox="0 0 16 16"><path d="M10.5 2.5l3 3L6 13H3v-3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+      <symbol id="i-scan" viewBox="0 0 16 16"><path d="M1.5 5V1.5H5M11 1.5h3.5V5M14.5 11v3.5H11M5 14.5H1.5V11M4 8h8" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+      <symbol id="i-check" viewBox="0 0 16 16"><path d="M2.5 8.5 6 12l7.5-8" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    </defs>
+  </svg>
+
+  <div id="app" class="term" data-phase="loading">
     <header class="topbar" style="grid-area: top">
       <div class="brand">
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="2" y="12" width="4" height="10" rx="1" fill="#fab219"/><rect x="10" y="6" width="4" height="16" rx="1" fill="#fab219"/><rect x="18" y="2" width="4" height="20" rx="1" fill="#fab219"/></svg>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2" y="12" width="4" height="10" fill="#fab219"/><rect x="10" y="6" width="4" height="16" fill="#fab219"/><rect x="18" y="2" width="4" height="20" fill="#fab219"/></svg>
         <span class="brand-name">AGENTSTREET</span>
-        <span class="chip sim" title="Fictional companies, play money, no real orders. Not financial advice.">SIMULATION · PLAY MONEY</span>
+        <span class="chip sim" data-i18n="app.disclaimer" data-i18n-title="app.disclaimerLong"></span>
       </div>
-      <div class="status" id="status"><span class="dot"></span><span id="status-text">CONNECTING</span></div>
+      <div class="status" id="status" role="status"><span class="dot"></span><span id="status-text"></span></div>
       <div class="clock" id="clock">D1 09:30</div>
       <div class="kpis" id="top-kpis"></div>
       <div class="top-actions">
-        <div class="seg" id="speed" role="group" aria-label="Simulation speed"></div>
-        <button class="btn" id="btn-pause" title="Pause / resume (Space)">❚❚</button>
-        <button class="btn ghost" id="btn-cvd" title="Colour-blind palette: swap green/red for blue/orange" aria-pressed="false">CVD</button>
-        <a class="btn ghost" id="btn-download" href="api/replay" download title="Download a shareable replay file">⤓ Replay</a>
+        <div class="seg" id="speed" role="group" aria-label="Speed"></div>
+        <button class="btn icon" id="btn-pause" data-i18n-title="btn.pause"><svg><use href="#i-pause"/></svg></button>
+        <button class="btn" id="btn-highlights"><svg><use href="#i-flag"/></svg><span data-i18n="btn.highlights"></span><span class="count" id="hl-count"></span></button>
+        <button class="btn" id="btn-export"><svg><use href="#i-film"/></svg><span data-i18n="btn.export"></span></button>
+        <label class="lang" data-i18n-title="setup.step.language"><svg><use href="#i-globe"/></svg><select id="lang-select" aria-label="Language"></select></label>
+        <button class="btn icon ghost" id="btn-motion" aria-pressed="true" data-i18n-title="btn.motionHint"><svg><use href="#i-motion"/></svg></button>
+        <button class="btn ghost" id="btn-cvd" aria-pressed="false" data-i18n-title="btn.cvdHint" data-i18n="btn.cvd"></button>
+        <a class="btn icon ghost" id="btn-download" href="api/replay" download data-i18n-title="btn.replayHint"><svg><use href="#i-download"/></svg></a>
+        <button class="btn icon ghost" id="btn-setup" data-i18n-title="btn.setup"><svg><use href="#i-gear"/></svg></button>
       </div>
     </header>
 
-    <!-- ───────── news ticker ───────── -->
-    <div class="ticker" style="grid-area: tick" aria-label="Latest headlines"><div class="ticker-track" id="ticker"></div></div>
+    <div class="ticker" style="grid-area: tick" aria-label="Headlines"><span class="ticker-tag">WIRE</span><div class="ticker-track" id="ticker"></div></div>
 
-    <!-- ───────── watchlist ───────── -->
     <section class="panel" style="grid-area: watch">
-      <h2>Watchlist <span class="hint">1–6</span></h2>
+      <h2><span class="fk">WL</span><span data-i18n="panel.watchlist"></span><span class="hint">1–6</span></h2>
       <div class="watchlist" id="watchlist" role="listbox" aria-label="Symbols"></div>
     </section>
 
-    <!-- ───────── chart ───────── -->
     <section class="panel chart-panel" style="grid-area: chart">
       <div class="panel-head">
         <div class="sym-head" id="sym-head"></div>
         <div class="seg" id="tf" role="group" aria-label="Candle size"></div>
-        <label class="toggle" title="The hidden fundamental value. Agents never see it; you do."><input type="checkbox" id="fair-toggle" checked /> True value</label>
+        <label class="toggle" data-i18n-title="chart.trueValueHint"><input type="checkbox" id="fair-toggle" checked /> <span data-i18n="chart.trueValue"></span></label>
       </div>
-      <div class="canvas-wrap"><canvas id="candles"></canvas></div>
+      <div class="canvas-wrap"><canvas id="candles"></canvas><div class="halt-stamp" id="halt-stamp" hidden></div></div>
     </section>
 
-    <!-- ───────── order book ───────── -->
     <section class="panel" style="grid-area: book">
-      <h2>Order book <span class="hint" id="book-sym"></span></h2>
+      <h2><span class="fk">OB</span><span data-i18n="panel.orderBook"></span><span class="hint" id="book-sym"></span></h2>
       <div class="ladder" id="ladder"></div>
     </section>
 
-    <!-- ───────── controls ───────── -->
     <section class="panel" style="grid-area: ctrl">
-      <h2 id="ctrl-title">Control room</h2>
+      <h2><span class="fk">CR</span><span id="ctrl-title" data-i18n="panel.control"></span></h2>
       <div id="controls" class="controls"></div>
     </section>
 
-    <!-- ───────── depth ───────── -->
     <section class="panel" style="grid-area: depth">
-      <h2>Market depth <span class="hint">cumulative size</span></h2>
+      <h2><span class="fk">MD</span><span data-i18n="panel.depth"></span><span class="hint" data-i18n="panel.depthHint"></span></h2>
       <div class="canvas-wrap"><canvas id="depth"></canvas></div>
     </section>
 
-    <!-- ───────── market stats ───────── -->
     <section class="panel" style="grid-area: stats">
-      <h2>Market</h2>
+      <h2><span class="fk">MK</span><span data-i18n="panel.market"></span></h2>
       <div class="stats">
         <div class="gauge-wrap"><canvas id="gauge"></canvas></div>
         <div class="stat-grid" id="stat-grid"></div>
       </div>
     </section>
 
-    <!-- ───────── tape ───────── -->
     <section class="panel" style="grid-area: tape">
       <div class="panel-head">
-        <h2>Time &amp; sales</h2>
-        <div class="seg small" id="tape-scope"><button data-v="sel" class="on">Symbol</button><button data-v="all">All</button></div>
+        <h2><span class="fk">TS</span><span data-i18n="panel.tape"></span></h2>
+        <div class="seg small" id="tape-scope"><button data-v="sel" class="on" data-i18n="tape.symbol"></button><button data-v="all" data-i18n="tape.all"></button></div>
       </div>
       <div class="tape" id="tape"></div>
     </section>
 
-    <!-- ───────── leaderboard ───────── -->
     <section class="panel" style="grid-area: lead">
       <div class="panel-head">
-        <h2>Leaderboard</h2>
-        <div class="seg small" id="lb-tabs"><button data-v="personality" class="on">Strategies</button><button data-v="team">Models</button><button data-v="agent">Traders</button></div>
+        <h2><span class="fk">LB</span><span data-i18n="panel.leaderboard"></span></h2>
+        <div class="seg small" id="lb-tabs"><button data-v="personality" class="on" data-i18n="lb.strategies"></button><button data-v="team" data-i18n="lb.models"></button><button data-v="agent" data-i18n="lb.traders"></button></div>
+        <span class="hint" data-i18n="lb.clickHint"></span>
       </div>
       <div class="lead">
         <div class="lb-table" id="lb-table"></div>
@@ -95,36 +117,53 @@
       </div>
     </section>
 
-    <!-- ───────── news ───────── -->
     <section class="panel" style="grid-area: news">
-      <h2>Newswire <span class="hint">agents trade on these</span></h2>
+      <h2><span class="fk">NW</span><span data-i18n="panel.newswire"></span><span class="hint" data-i18n="panel.newswireHint"></span></h2>
       <div class="news" id="news"></div>
     </section>
 
-    <!-- ───────── chatter / alerts ───────── -->
     <section class="panel" style="grid-area: feed">
       <div class="panel-head">
-        <h2>Floor</h2>
-        <div class="seg small" id="feed-tabs"><button data-v="chatter" class="on">Chatter</button><button data-v="alerts">Alerts <span id="alert-count" class="count"></span></button></div>
+        <h2><span class="fk">FL</span><span data-i18n="panel.floor"></span></h2>
+        <div class="seg small" id="feed-tabs"><button data-v="chatter" class="on" data-i18n="feed.chatter"></button><button data-v="alerts"><span data-i18n="feed.alerts"></span> <span id="alert-count" class="count"></span></button></div>
       </div>
       <div class="feed" id="feed"></div>
     </section>
 
-    <!-- ───────── scrubber ───────── -->
     <footer class="scrub" style="grid-area: scrub">
-      <button class="btn" id="btn-play" title="Play / pause the replay">▶</button>
+      <button class="btn icon" id="btn-play" data-i18n-title="scrub.play"><svg><use href="#i-play"/></svg></button>
       <div class="seg small" id="play-speed"></div>
-      <div class="scrub-track">
+      <div class="scrub-track" data-i18n-title="scrub.hint">
         <canvas id="scrub-canvas"></canvas>
-        <input type="range" id="scrub" min="1" max="1" value="1" aria-label="Time travel through the session" />
+        <input type="range" id="scrub" min="1" max="1" value="1" data-i18n-aria="scrub.hint" />
       </div>
       <span class="scrub-clock" id="scrub-clock"></span>
-      <button class="btn live-btn" id="btn-live" title="Jump back to the live market">● LIVE</button>
+      <button class="btn live-btn" id="btn-live" data-i18n-title="scrub.live"><svg><use href="#i-live"/></svg><span data-i18n="btn.live"></span></button>
     </footer>
   </div>
 
+  <!-- Overlays -->
+  <div id="breaker" class="breaker" hidden><div class="breaker-stripes"></div><div class="breaker-text" id="breaker-text"></div></div>
+  <div id="flash" class="flash" aria-hidden="true"></div>
   <div id="breaking" class="breaking" role="alert" hidden></div>
+  <div id="toast" class="toast" role="status" hidden></div>
   <div id="tooltip" class="tooltip" hidden></div>
+
+  <div id="hl-pop" class="pop" hidden>
+    <div class="pop-head"><span class="fk">HL</span><span data-i18n="hl.title"></span><button class="btn icon ghost close" data-close="hl-pop"><svg><use href="#i-x"/></svg></button></div>
+    <ol id="hl-list" class="hl-list"></ol>
+  </div>
+
+  <aside id="xray" class="drawer" hidden>
+    <div class="drawer-head"><span class="fk">XR</span><span data-i18n="xray.title"></span><button class="btn icon ghost close" data-close="xray"><svg><use href="#i-x"/></svg></button></div>
+    <div class="drawer-body" id="xray-body"></div>
+  </aside>
+
+  <dialog id="dlg-editor" class="dlg"><form method="dialog" id="editor-form"></form></dialog>
+  <dialog id="dlg-export" class="dlg"><div id="export-body"></div></dialog>
+  <dialog id="dlg-share" class="dlg wide"><div id="share-body"></div></dialog>
+  <div id="onboarding" class="onboarding" hidden></div>
+
   <script type="module" src="app.js"></script>
 </body>
 </html>

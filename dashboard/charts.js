@@ -4,9 +4,11 @@ export const css = (name) => getComputedStyle(document.documentElement).getPrope
 
 /** Size a canvas to its box at device pixel ratio; returns { ctx, w, h }. */
 export function fit(canvas) {
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  const w = Math.max(1, canvas.clientWidth);
-  const h = Math.max(1, canvas.clientHeight);
+  // Offscreen canvases (clip export) carry a fixed logical size and render at 1x.
+  const fixed = canvas._size;
+  const dpr = fixed ? 1 : Math.min(2, window.devicePixelRatio || 1);
+  const w = Math.max(1, fixed ? fixed[0] : canvas.clientWidth);
+  const h = Math.max(1, fixed ? fixed[1] : canvas.clientHeight);
   if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
@@ -48,6 +50,14 @@ export function roundRect(ctx, x, y, w, h, r) {
  * opts: { showFair, news: [{ i, up, headline }], hover: {x,y}|null }
  * Returns hit-test info for tooltips.
  */
+export function offscreen(w, h) {
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  c._size = [w, h];
+  return c;
+}
+
 export function drawCandles(canvas, candles, opts) {
   const { ctx, w, h } = fit(canvas);
   const up = css('--up'), down = css('--down'), grid = css('--line'), muted = css('--muted'), text = css('--text'), fairC = css('--fair');
@@ -330,7 +340,7 @@ export function fgLabel(v) {
   return FG_LABELS[Math.min(4, Math.floor(v / 20))];
 }
 
-export function drawGauge(canvas, value) {
+export function drawGauge(canvas, value, labels = {}) {
   const { ctx, w, h } = fit(canvas);
   const cx = w / 2;
   const r = Math.max(20, Math.min(w / 2 - 10, h - 58));
@@ -341,7 +351,7 @@ export function drawGauge(canvas, value) {
     const a0 = Math.PI + (i / 5) * Math.PI + gap;
     const a1 = Math.PI + ((i + 1) / 5) * Math.PI - gap;
     ctx.strokeStyle = segs[i];
-    ctx.globalAlpha = Math.floor(value / 20) === i || (value === 100 && i === 4) ? 1 : 0.32;
+    ctx.globalAlpha = Math.min(4, Math.floor(value / 20)) === i ? 1 : 0.32;
     ctx.lineWidth = Math.max(6, r * 0.16);
     ctx.lineCap = 'butt';
     ctx.beginPath();
@@ -367,9 +377,9 @@ export function drawGauge(canvas, value) {
   ctx.fillText(String(Math.round(value)), cx, cy + 24);
   ctx.font = FONT;
   ctx.fillStyle = css('--text-2');
-  ctx.fillText(fgLabel(value).toUpperCase(), cx, cy + 38);
+  ctx.fillText(labels.label ?? fgLabel(value).toUpperCase(), cx, cy + 38);
   ctx.fillStyle = css('--muted');
-  ctx.fillText('FEAR & GREED', cx, 11);
+  ctx.fillText(labels.title ?? 'FEAR & GREED', cx, 11);
   ctx.textAlign = 'left';
 }
 

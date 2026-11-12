@@ -2,6 +2,7 @@ import type { SymbolSpec } from '../core/types.js';
 import type { ExchangeConfig } from '../engine/exchange.js';
 import type { NewsKind } from '../news/newsroom.js';
 import type { Decision } from '../agents/types.js';
+import type { SpendLimits } from '../safety/limits.js';
 
 export interface SimConfig {
   seed: number;
@@ -34,10 +35,24 @@ export interface SimConfig {
   depthLevels: number;
   /** Live mode keeps at most this many ticks of history in memory (0 = unlimited). */
   maxHistory: number;
+  /** LLM spend guardrails (rate limit, token and dollar caps). */
+  limits?: Partial<SpendLimits>;
+  /** USD per token for priced models (from OpenRouter's catalog or set by hand). */
+  prices?: Record<string, { input: number; output: number }>;
 }
 
 export type Command =
-  | { type: 'news'; symbol: string | null; tone: 'positive' | 'negative'; kind?: NewsKind; headline?: string }
+  | {
+      type: 'news';
+      symbol: string | null;
+      tone: 'positive' | 'negative';
+      kind?: NewsKind;
+      headline?: string;
+      /** 0.2 .. 2: how big the story is (news editor). */
+      magnitude?: number;
+      /** Publish this many ticks after the command is applied (news editor schedule). */
+      delay?: number;
+    }
   | { type: 'rate'; bps: number }
   | { type: 'crash'; symbol: string; size?: number }
   | { type: 'halt'; symbol: string | null; ticks?: number }
@@ -87,7 +102,7 @@ export interface Thought {
 
 export interface SimEvent {
   t: number;
-  type: 'halt' | 'resume' | 'liquidation' | 'bust' | 'rate' | 'breaker' | 'crash' | 'scenario' | 'session';
+  type: 'halt' | 'resume' | 'liquidation' | 'bust' | 'rate' | 'breaker' | 'crash' | 'scenario' | 'session' | 'llm' | 'scheduled';
   symbol?: string;
   text: string;
 }
@@ -107,6 +122,8 @@ export interface EquitySnap {
   eq: number[];
   /** 1 = busted, per agent. Omitted when nobody is. */
   busted?: number[];
+  /** Positions per agent (shares per symbol, universe order); 0 when flat. */
+  pos?: (number[] | 0)[];
 }
 
 /** Everything that changed in one tick: streamed to the dashboard, appended to the replay. */

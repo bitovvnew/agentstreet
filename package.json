@@ -1,6 +1,6 @@
 {
   "name": "agentstreet",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simulated stock exchange run by AI trader agents. Real limit order book, margin, circuit breakers, LLM newsroom, Bloomberg-style live terminal. No real money. Runs with zero API keys.",
   "type": "module",
   "bin": {
@@ -16,7 +16,10 @@
     "bin",
     "dist",
     "dashboard",
+    "locales",
     "examples",
+    "setup.sh",
+    "setup.bat",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"
@@ -25,12 +28,15 @@
     "build": "tsc -p tsconfig.json",
     "prepare": "tsc -p tsconfig.json",
     "start": "npm run build && node bin/agentstreet.js",
-    "demo": "node bin/agentstreet.js",
+    "demo": "node bin/agentstreet.js demo",
     "headless": "node bin/agentstreet.js run --ticks 2000 --out replays/demo.street.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "screenshots": "npm run build && node scripts/screenshots.mjs"
+    "screenshots": "npm run build && node scripts/screenshots.mjs",
+    "check:locales": "node scripts/check-locales.mjs",
+    "setup": "node bin/agentstreet.js setup",
+    "offline": "node bin/agentstreet.js --offline"
   },
   "engines": {
     "node": ">=20"
@@ -50,7 +56,9 @@
     "claude",
     "gemini",
     "ollama",
-    "dashboard"
+    "dashboard",
+    "openrouter",
+    "i18n"
   ],
   "repository": {
     "type": "git",

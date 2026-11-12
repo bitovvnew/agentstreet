@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] — 2026-11-12
+
+- Redesigned market terminal with localized labels, motion on price changes, and eight languages.
+- Terminal and browser setup with live provider catalogs, key validation, Ollama detection and a keyless demo command.
+- Highlights with replay jumps, trader X-ray, scheduled fictional news, share cards and WebM or GIF replay clips.
+- Tournament and strategy backtest commands across scenarios and seeds, with Markdown, JSON and HTML reports.
+- OpenRouter support, per-provider request limits, token and price-based budgets, and credential redaction.
+- Windows and Unix setup scripts, locale coverage checks and demo screenshots.
+
 ## [0.1.0] — 2026-11-12
 
 First public release.
@@ -35,3 +44,4 @@ First public release.
 - Deterministic seeds; recorded inputs and LLM decisions; `run`, `replay` and `verify` commands; gzip support.
 
 [0.1.0]: https://github.com/bitovvnew/agentstreet/releases/tag/v0.1.0
+[0.1.1]: https://github.com/bitovvnew/agentstreet/releases/tag/v0.1.1

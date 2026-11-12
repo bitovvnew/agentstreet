@@ -11,3 +11,6 @@ Thumbs.db
 coverage/
 .vscode/
 .idea/
+.agentstreet/
+reports/
+*.strategy.js
